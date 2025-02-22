@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Web Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script>
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Ground
+        let groundGeometry = new THREE.PlaneGeometry(20, 20);
+        let groundMaterial = new THREE.MeshBasicMaterial({ color: 0x228B22, side: THREE.DoubleSide });
+        let ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+        
+        // Player Character
+        let playerGeometry = new THREE.BoxGeometry(1, 2, 1);
+        let playerMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        let player = new THREE.Mesh(playerGeometry, playerMaterial);
+        player.position.set(-3, 1, 0);
+        scene.add(player);
+        
+        // NPC Character
+        let npcGeometry = new THREE.BoxGeometry(1, 2, 1);
+        let npcMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        let npc = new THREE.Mesh(npcGeometry, npcMaterial);
+        npc.position.set(3, 1, 0);
+        scene.add(npc);
+        
+        camera.position.set(0, 5, 10);
+        camera.lookAt(0, 0, 0);
+        
+        let keys = {};
+        window.addEventListener("keydown", (event) => { keys[event.key] = true; });
+        window.addEventListener("keyup", (event) => { keys[event.key] = false; });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            if (keys["w"]) player.position.z -= 0.1;
+            if (keys["s"]) player.position.z += 0.1;
+            if (keys["a"]) player.position.x -= 0.1;
+            if (keys["d"]) player.position.x += 0.1;
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
