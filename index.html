@@ -16,10 +16,21 @@
             padding: 10px;
             display: none;
         }
+        #interactionPrompt {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div id="dialogueBox">Hello, traveler! Welcome to this world.</div>
+    <div id="interactionPrompt">Press E to interact</div>
     <script>
         let scene = new THREE.Scene();
         let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -49,16 +60,22 @@
         scene.add(npc);
         
         camera.position.set(0, 5, 10);
-        camera.lookAt(0, 0, 0);
+        camera.lookAt(player.position);
         
         let keys = {};
         window.addEventListener("keydown", (event) => { keys[event.key] = true; checkInteraction(); });
         window.addEventListener("keyup", (event) => { keys[event.key] = false; });
         
         function checkInteraction() {
-            if (keys["e"] && player.position.distanceTo(npc.position) < 2) {
-                document.getElementById("dialogueBox").style.display = "block";
-                setTimeout(() => { document.getElementById("dialogueBox").style.display = "none"; }, 3000);
+            let interactionPrompt = document.getElementById("interactionPrompt");
+            if (player.position.distanceTo(npc.position) < 2) {
+                interactionPrompt.style.display = "block";
+                if (keys["e"]) {
+                    document.getElementById("dialogueBox").style.display = "block";
+                    setTimeout(() => { document.getElementById("dialogueBox").style.display = "none"; }, 3000);
+                }
+            } else {
+                interactionPrompt.style.display = "none";
             }
         }
         
@@ -68,6 +85,15 @@
             if (keys["s"]) player.position.z += 0.1;
             if (keys["a"]) player.position.x -= 0.1;
             if (keys["d"]) player.position.x += 0.1;
+            
+            // Camera follows the player
+            camera.position.set(player.position.x, 5, player.position.z + 5);
+            camera.lookAt(player.position);
+            
+            // Camera rotation using arrow keys
+            if (keys["ArrowLeft"]) camera.rotation.y += 0.02;
+            if (keys["ArrowRight"]) camera.rotation.y -= 0.02;
+            
             renderer.render(scene, camera);
         }
         
